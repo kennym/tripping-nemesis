@@ -7,5 +7,5 @@ Bundler.require
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
   app.name = 'location-sender'
-  app.frameworks += ["CoreLocation"]
+  app.frameworks += ["CoreLocation", "CoreData"]
 end

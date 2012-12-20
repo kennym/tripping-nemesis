@@ -27,5 +27,4 @@ class AppDelegate
     end
     @locationManager
   end
-
 end
