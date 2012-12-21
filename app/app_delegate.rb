@@ -58,26 +58,17 @@ class AppDelegate
 
   # iOS >= 6
   def locationManager(manager, didUpdateLocations:locations)
-    action = lambda do
-      runLoop = NSRunLoop.currentRunLoop
-
-      data = {latitude: locations.last.coordinate.latitude,
-              longitude: locations.last.coordinate.longitude,
-              device_token: @device_token }
-      BW::HTTP.post("http://192.168.1.100:4567/", {payload: data}) do |response|
-        if response.ok?
-          #json = BW::JSON.parse(response.body.to_str)
-          #p json['id']
-        else
-          App.alert(response.error_message)
-        end
+    data = {latitude: locations.last.coordinate.latitude,
+            longitude: locations.last.coordinate.longitude,
+            device_token: @device_token }
+    BW::HTTP.post("http://192.168.1.100:4567/", {payload: data}) do |response|
+      if response.ok?
+        #json = BW::JSON.parse(response.body.to_str)
+        #p json['id']
+      else
+        App.alert(response.error_message)
       end
-
-      runLoop.run
     end
-
-    thread = NSThread.alloc.initWithTarget action, selector:"call", object:nil
-    thread.start
   end
 
   def locationManager(manager, didFailWithError:error)
