@@ -19,7 +19,7 @@ class AppDelegate
     @locationManager.startMonitoringSignificantLocationChanges
   end
 
-  def applicationDidEnterForeground
+  def applicationDidBecomeActive
     @locationManager.stopMonitoringSignificantLocationChanges
   end
 
@@ -58,15 +58,30 @@ class AppDelegate
 
   # iOS >= 6
   def locationManager(manager, didUpdateLocations:locations)
-    data = {latitude: locations.last.coordinate.latitude,
-            longitude: locations.last.coordinate.longitude,
-            device_token: @device_token }
-    BW::HTTP.post("http://192.168.1.100:4567/", {payload: data}) do |response|
-      if response.ok?
-        #json = BW::JSON.parse(response.body.to_str)
-        #p json['id']
-      else
-        App.alert(response.error_message)
+    if App.shared.applicationState == UIApplicationStateBackground
+      bgTask = App.shared.beginBackgroundTaskWithExpirationHandler(lambda {UIApp.shared.endBackgroundTask(bgTask) })
+
+      data = {latitude: locations.last.coordinate.latitude,
+              longitude: locations.last.coordinate.longitude,
+              device_token: @device_token }
+
+      data_str = "latitude=#{data[:latitude]}&longitude=#{data[:longitude]}&device_token=#{@device_token}"
+
+      url_string = ("http://192.168.1.127:4567").stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+      url = NSURL.URLWithString(url_string)
+      request = NSMutableURLRequest.requestWithURL(url)
+      request.setHTTPMethod("POST")
+      request.setHTTPBody(data_str.to_s.dataUsingEncoding(NSUTF8StringEncoding))
+
+      response = nil
+      error = nil
+      data = NSURLConnection.sendSynchronousRequest(request, returningResponse: response, error: error)
+      raise "BOOM!" unless (error.nil?)
+      json = NSString.alloc.initWithData(data, encoding: NSUTF8StringEncoding)
+
+      if bgTask != UIBackgroundTaskInvalid
+        App.shared.endBackgroundTask(bgTask)
+        bgTask = UIBackgroundTaskInvalid
       end
     end
   end
