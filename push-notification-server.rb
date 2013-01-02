@@ -17,9 +17,12 @@ post '/' do
     gateway:     "gateway.sandbox.push.apple.com"
   )
 
-  notification = Grocer::Notification.new(
-    device_token: "8c2889f8ae5166a27158266909684f3879915b9706b48643a72eb0f695be86ea",
-    alert:        "Hello from Grocer!"
-  )
-  pusher.push(notification)
+  device_token = params[:device_token]
+  unless device_token.nil?
+    notification = Grocer::Notification.new(
+      device_token: "#{device_token}",
+      alert:        "Hello from Grocer!"
+    )
+    pusher.push(notification)
+  end
 end
