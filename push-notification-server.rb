@@ -13,7 +13,7 @@ post '/' do
   puts "Latitude: #{params[:latitude]}"
 
   pusher = Grocer.pusher(
-    certificate: "/Users/kenny/Desktop/certificate.pem",
+    certificate: "#{Dir.pwd}/certificate.pem",
     gateway:     "gateway.sandbox.push.apple.com"
   )
 
