@@ -67,7 +67,7 @@ class AppDelegate
 
       data_str = "latitude=#{data[:latitude]}&longitude=#{data[:longitude]}&device_token=#{@device_token}"
 
-      url_string = ("http://192.168.1.127:4567").stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+      url_string = ("#{@controller.url}").stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
       url = NSURL.URLWithString(url_string)
       request = NSMutableURLRequest.requestWithURL(url)
       request.setHTTPMethod("POST")
